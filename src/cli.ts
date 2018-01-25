@@ -1,6 +1,6 @@
 import yargs = require("yargs");
 import path = require("path");
-import { Changelogger } from "./changelogger";
+import { ChangeReminder } from "./reminder";
 
 const defaultChangelogPath = path.join(process.cwd(), "CHANGELOG");
 const defaultLoggerPath = path.join(process.cwd(), ".changelogger");
@@ -10,5 +10,5 @@ const argv = yargs
   .default("c", defaultChangelogPath)
   .default("l", defaultLoggerPath).argv;
 
-const changelogger = new Changelogger(argv.c, argv.l);
+const changelogger = new ChangeReminder(argv.c, argv.l);
 changelogger.run();

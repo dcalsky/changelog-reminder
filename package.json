@@ -1,8 +1,8 @@
 {
-  "name": "changelogger",
-  "version": "0.0.1",
-  "bin": "dist/cli/changelogger.js",
-  "main": "dist/index.js",
+  "name": "changelog-reminder",
+  "version": "0.0.2",
+  "bin": "dist/src/cli.js",
+  "main": "dist/src/reminder.js",
   "author": "dcalsky",
   "license": "Apache-2.0",
   "keywords": [
@@ -10,7 +10,6 @@
   ],
   "scripts": {
     "build": "tsc",
-    "cli": "node dist/src/changelogger.js",
     "test": "mocha -r ts-node/register ./test/*.test.ts"
   },
   "dependencies": {

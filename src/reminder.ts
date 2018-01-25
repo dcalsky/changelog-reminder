@@ -1,7 +1,7 @@
 import { Logger } from "./logger";
 import { Parser, Store } from "./parser/index";
 
-export class Changelogger {
+export class ChangeReminder {
   private parser: Parser;
   private store: Store = new Store();
   private logger: Logger;
