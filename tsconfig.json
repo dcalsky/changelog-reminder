@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "stripInternal": true,
+    "pretty": true,
+    "sourceMap": false,
+    "outDir": "./dist",
+    "typeRoots" : ["./node_modules/@types/"]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
