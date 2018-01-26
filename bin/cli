@@ -1,0 +1,239 @@
+#!/usr/bin/env node
+'use strict';
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var fs = require('fs');
+var chalk = require('chalk');
+var chalk__default = _interopDefault(chalk);
+var marked = require('marked');
+var cheerio = require('cheerio');
+var yargs = require('yargs');
+var path = require('path');
+
+var Logger = (function () {
+    function Logger(loggerPath, store) {
+        this.loggerPath = loggerPath;
+        this.store = store;
+        if (this.findLoggerFile()) {
+            var freshVersions = this.getFreshVersions();
+            this.log(freshVersions);
+        }
+        this.wrtieLoggerFile();
+    }
+    Logger.prototype.getFreshVersions = function () {
+        var index = parseInt(fs.readFileSync(this.loggerPath).toString());
+        return this.store.getFreshVersions(index);
+    };
+    Logger.prototype.findLoggerFile = function () {
+        return fs.existsSync(this.loggerPath);
+    };
+    Logger.prototype.wrtieLoggerFile = function () {
+        fs.writeFileSync(this.loggerPath, 0);
+    };
+    Logger.prototype.log = function (versions) {
+        var _this = this;
+        versions.forEach(function (version) {
+            _this.displayVersion(version);
+            console.log("#".repeat(20) + "\n");
+        });
+    };
+    Logger.prototype.displayVersion = function (version) {
+        var log = console.log;
+        log(chalk.bgBlue.white(version.title));
+        version.changes.forEach(function (change) {
+            log("\n" + chalk__default.greenBright(change.type));
+            change.items.forEach(function (item) {
+                log(item);
+            });
+        });
+    };
+    return Logger;
+}());
+
+var ChangeTypes;
+(function (ChangeTypes) {
+    ChangeTypes[ChangeTypes["Added"] = "Added"] = "Added";
+    ChangeTypes[ChangeTypes["Changed"] = "Changed"] = "Changed";
+    ChangeTypes[ChangeTypes["Deprecated"] = "Deprecated"] = "Deprecated";
+    ChangeTypes[ChangeTypes["Removed"] = "Removed"] = "Removed";
+    ChangeTypes[ChangeTypes["Fixed"] = "Fixed"] = "Fixed";
+    ChangeTypes[ChangeTypes["Security"] = "Security"] = "Security";
+})(ChangeTypes || (ChangeTypes = {}));
+var Change = (function () {
+    function Change() {
+        this.items = [];
+    }
+    Change.prototype.setType = function (text) {
+        if (!(text in ChangeTypes)) {
+            return false;
+        }
+        this.type = ChangeTypes[text];
+        return true;
+    };
+    return Change;
+}());
+var Version = (function () {
+    function Version(title) {
+        this.changes = [];
+        this.title = title;
+    }
+    return Version;
+}());
+var Store = (function () {
+    function Store() {
+        this.versions = [];
+    }
+    Store.prototype.addVersion = function (v) {
+        this.versions.push(v);
+    };
+    Store.prototype.getVersions = function () {
+        return this.versions;
+    };
+    Store.prototype.getFreshVersions = function (index) {
+        var freshVersions = [];
+        for (var i = 0; i < index; ++i) {
+            freshVersions.push(this.versions[i]);
+        }
+        return freshVersions;
+    };
+    return Store;
+}());
+
+var VERSION_FLAG = "h2";
+var CHANGE_FLAG = "h3";
+var LIST_FLAG = "ul";
+var ParserStatus;
+(function (ParserStatus) {
+    ParserStatus[ParserStatus["VERSION"] = 0] = "VERSION";
+    ParserStatus[ParserStatus["CHANGE"] = 1] = "CHANGE";
+    ParserStatus[ParserStatus["LIST"] = 2] = "LIST";
+    ParserStatus[ParserStatus["END"] = 3] = "END";
+})(ParserStatus || (ParserStatus = {}));
+var Parser = (function () {
+    function Parser(filePath, store, options) {
+        if (options === void 0) { options = {}; }
+        this.filePath = filePath;
+        this.store = store;
+        this.status = ParserStatus.VERSION;
+        var marked_ = marked;
+        if (!this.changelogExist()) {
+            throw "Changlog is not existed.";
+        }
+        var content = fs.readFileSync(filePath).toString();
+        var html = marked_(content);
+        this.$ = cheerio.load(html);
+        this.currentElement = this.$("h2");
+    }
+    Parser.prototype.changelogExist = function () {
+        return fs.existsSync(this.filePath);
+    };
+    Parser.prototype.parse = function () {
+        var el = this.currentElement.first()[0];
+        if (!el) {
+            return;
+        }
+        var name = el.tagName;
+        var stop = false;
+        switch (this.status) {
+            case ParserStatus.VERSION:
+                if (name == CHANGE_FLAG) {
+                    this.status = ParserStatus.CHANGE;
+                    stop = true;
+                    break;
+                }
+                if (this.currentVersion) {
+                    this.pushVersion();
+                }
+                this.addVersion();
+                break;
+            case ParserStatus.CHANGE:
+                this.addChange();
+                this.status = ParserStatus.LIST;
+                break;
+            case ParserStatus.LIST:
+                if (name == VERSION_FLAG) {
+                    this.status = ParserStatus.VERSION;
+                    this.pushChange();
+                    stop = true;
+                    break;
+                }
+                else if (name == CHANGE_FLAG) {
+                    this.status = ParserStatus.CHANGE;
+                    this.pushChange();
+                    stop = true;
+                    break;
+                }
+                this.addList();
+                break;
+            default:
+                break;
+        }
+        if (!stop) {
+            this.currentElement = this.currentElement.next();
+        }
+        this.parse();
+    };
+    Parser.prototype.pushVersion = function () {
+        this.store.addVersion(this.currentVersion);
+    };
+    Parser.prototype.pushChange = function () {
+        this.currentVersion.changes.push(this.currentChange);
+    };
+    Parser.prototype.addVersion = function () {
+        var el = this.currentElement.first();
+        var name = el[0].tagName;
+        if (name !== VERSION_FLAG) {
+            throw "error h2";
+        }
+        this.currentVersion = new Version(el.text());
+    };
+    Parser.prototype.addChange = function () {
+        var name = this.currentElement.first()[0].tagName;
+        if (name !== CHANGE_FLAG) {
+            throw "error h3";
+        }
+        this.currentChange = new Change();
+        var text = this.currentElement[0].children[0].data;
+        if (!this.currentChange.setType(text)) {
+            throw "error set type";
+        }
+    };
+    Parser.prototype.addList = function () {
+        var _this = this;
+        var name = this.currentElement.first()[0].tagName;
+        if (name !== LIST_FLAG) {
+            throw "error ul";
+        }
+        var list = this.currentElement.first().children("li");
+        list.each(function (i, el) {
+            _this.currentChange.items.push(_this.getLiText(el));
+        });
+    };
+    Parser.prototype.getLiText = function (li) {
+        return li.children[0].data;
+    };
+    return Parser;
+}());
+
+var ChangeReminder = (function () {
+    function ChangeReminder(changelogPath, loggerPath) {
+        this.changelogPath = changelogPath;
+        this.loggerPath = loggerPath;
+        this.store = new Store();
+        this.parser = new Parser(changelogPath, this.store);
+    }
+    ChangeReminder.prototype.run = function () {
+        this.parser.parse();
+        this.logger = new Logger(this.loggerPath, this.store);
+    };
+    return ChangeReminder;
+}());
+
+var defaultChangelogPath = path.join(process.cwd(), "CHANGELOG");
+var defaultLoggerPath = path.join(process.cwd(), ".changelogger");
+var argv = yargs.usage("Usage: $0 -c [changelog path] -l [logger path]")
+    .default("c", defaultChangelogPath)
+    .default("l", defaultLoggerPath).argv;
+var changelogger = new ChangeReminder(argv.c, argv.l);
+changelogger.run();
