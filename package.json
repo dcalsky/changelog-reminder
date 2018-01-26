@@ -1,8 +1,8 @@
 {
   "name": "changelog-reminder",
-  "version": "0.0.3",
-  "bin": "dist/src/cli.js",
-  "main": "dist/src/cli.js",
+  "version": "0.0.6",
+  "bin": "bin/cli",
+  "main": "bin/cli",
   "ts:main": "src/cli.ts",
   "author": "dcalsky",
   "license": "Apache-2.0",
