@@ -41,7 +41,7 @@ var Logger = (function () {
     };
     Logger.prototype.displayVersion = function (version) {
         var log = console.log;
-        log(chalk.bgBlue.white(version.title));
+        log(chalk.bgYellow(version.title));
         version.changes.forEach(function (change) {
             log("\n" + chalk__default.greenBright(change.type));
             change.items.forEach(function (item) {
@@ -99,6 +99,7 @@ var Store = (function () {
             }
             freshVersions.push(this.versions[i]);
         }
+        return freshVersions;
     };
     Store.prototype.getLatestVersion = function () {
         return this.versions[0];
