@@ -4,15 +4,13 @@ import { Store, Version } from "./parser";
 
 export class Logger {
   constructor(private loggerPath: string, private store: Store) {
-    if (this.findLoggerFile()) {
-      const freshVersions = this.getFreshVersions();
-      this.log(freshVersions);
-    }
+    const freshVersions = this.getFreshVersions();
+    this.log(freshVersions);
     this.wrtieLoggerFile();
   }
 
   private getFreshVersions() {
-    const title = fs.readFileSync(this.loggerPath).toString();
+    const title = this.findLoggerFile() ? fs.readFileSync(this.loggerPath).toString() : "";
     return this.store.getFreshVersions(title);
   }
 

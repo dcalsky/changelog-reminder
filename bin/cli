@@ -15,14 +15,12 @@ var Logger = (function () {
     function Logger(loggerPath, store) {
         this.loggerPath = loggerPath;
         this.store = store;
-        if (this.findLoggerFile()) {
-            var freshVersions = this.getFreshVersions();
-            this.log(freshVersions);
-        }
+        var freshVersions = this.getFreshVersions();
+        this.log(freshVersions);
         this.wrtieLoggerFile();
     }
     Logger.prototype.getFreshVersions = function () {
-        var title = fs.readFileSync(this.loggerPath).toString();
+        var title = this.findLoggerFile() ? fs.readFileSync(this.loggerPath).toString() : "";
         return this.store.getFreshVersions(title);
     };
     Logger.prototype.findLoggerFile = function () {
