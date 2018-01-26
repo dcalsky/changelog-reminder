@@ -6,7 +6,7 @@ describe("parser", () => {
   const filePath = path.join(__dirname, "CHANGELOG");
   const parser = new Parser(filePath, new Store());
   parser.parse();
-  const versions = parser.store.getVersions();
+  const versions = parser.store.versions;
 
   it("Unreleased version", () => {
     expect(versions[0].title === "Unreleased");

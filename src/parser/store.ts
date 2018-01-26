@@ -30,28 +30,33 @@ export class Version {
 }
 
 export class Store {
-  private versions: Version[] = [];
+  private _versions: Version[] = [];
+  private _intro: string;
 
   public addVersion(v: Version): void {
-    this.versions.push(v);
+    this._versions.push(v);
   }
 
-  public getVersions(): Version[] {
-    return this.versions;
+  get versions(): Version[] {
+    return this._versions;
+  }
+
+  get intro() {
+    return this._intro;
   }
 
   public getFreshVersions(title: string): Version[] {
     let freshVersions: Version[] = [];
-    for (let i = 0; i < this.versions.length; ++i) {
-      if (this.versions[i].title === title) {
+    for (let i = 0; i < this._versions.length; ++i) {
+      if (this._versions[i].title === title) {
         return freshVersions;
       }
-      freshVersions.push(this.versions[i]);
+      freshVersions.push(this._versions[i]);
     }
-    return freshVersions
+    return freshVersions;
   }
 
   public getLatestVersion() {
-    return this.versions[0];
+    return this._versions[0];
   }
 }
