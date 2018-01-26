@@ -1,6 +1,6 @@
-import marked = require("marked");
-import cheerio = require("cheerio");
-import fs = require("fs");
+import * as marked from "marked";
+import * as cheerio from "cheerio";
+import * as fs from "fs";
 import { Version, Change, Store } from "./store";
 
 const VERSION_FLAG = "h2";
@@ -22,11 +22,12 @@ export class Parser {
   private currentChange: Change;
 
   constructor(private filePath: string, public store: Store, options = {}) {
+    const marked_ = marked 
     if (!this.changelogExist()) {
       throw "Changlog is not existed.";
     }
     const content = fs.readFileSync(filePath).toString();
-    const html = marked(content);
+    const html = marked_(content);
     this.$ = cheerio.load(html);
     this.currentElement = this.$("h2");
   }

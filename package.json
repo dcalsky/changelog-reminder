@@ -1,20 +1,21 @@
 {
   "name": "changelog-reminder",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "bin": "dist/src/cli.js",
-  "main": "dist/src/reminder.js",
+  "main": "dist/src/cli.js",
+  "ts:main": "src/cli.ts",
   "author": "dcalsky",
   "license": "Apache-2.0",
   "keywords": [
     "changelog"
   ],
   "scripts": {
-    "build": "tsc",
+    "watch": "tsc",
+    "build": "rollup -c",
     "test": "mocha -r ts-node/register ./test/*.test.ts"
   },
   "dependencies": {
     "chalk": "^2.3.0",
-    "changelog-parser": "^2.1.0",
     "cheerio": "^1.0.0-rc.2",
     "marked": "^0.3.7",
     "yargs": "^11.0.0"
@@ -29,6 +30,8 @@
     "@types/yargs": "^10.0.1",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
+    "rollup": "^0.55.0",
+    "rollup-plugin-typescript": "^0.8.1",
     "ts-node": "^4.0.2",
     "typescript": "^2.6.2"
   }

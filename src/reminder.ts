@@ -1,5 +1,5 @@
 import { Logger } from "./logger";
-import { Parser, Store } from "./parser/index";
+import { Parser, Store } from "./parser";
 
 export class ChangeReminder {
   private parser: Parser;

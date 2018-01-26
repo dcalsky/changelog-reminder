@@ -1,6 +1,6 @@
-import fs = require("fs");
-import chalk = require("chalk");
-import { Store, Version } from "./parser/index";
+import * as fs from "fs";
+import * as chalk from "chalk";
+import { Store, Version } from "./parser";
 
 export class Logger {
   constructor(private loggerPath: string, private store: Store) {
@@ -33,7 +33,7 @@ export class Logger {
 
   private displayVersion(version: Version) {
     const log = console.log;
-    log(chalk.default.bgBlue.white(version.title));
+    log(chalk.bgBlue.white(version.title));
     version.changes.forEach(change => {
       log("\n" + chalk.default.greenBright(change.type));
       change.items.forEach(item => {

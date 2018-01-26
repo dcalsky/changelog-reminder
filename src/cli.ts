@@ -1,5 +1,5 @@
-import yargs = require("yargs");
-import path = require("path");
+import * as yargs from "yargs";
+import * as path from "path";
 import { ChangeReminder } from "./reminder";
 
 const defaultChangelogPath = path.join(process.cwd(), "CHANGELOG");
