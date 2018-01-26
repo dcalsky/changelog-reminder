@@ -22,14 +22,15 @@ var Logger = (function () {
         this.wrtieLoggerFile();
     }
     Logger.prototype.getFreshVersions = function () {
-        var index = parseInt(fs.readFileSync(this.loggerPath).toString());
-        return this.store.getFreshVersions(index);
+        var title = fs.readFileSync(this.loggerPath).toString();
+        return this.store.getFreshVersions(title);
     };
     Logger.prototype.findLoggerFile = function () {
         return fs.existsSync(this.loggerPath);
     };
     Logger.prototype.wrtieLoggerFile = function () {
-        fs.writeFileSync(this.loggerPath, 0);
+        var latestVersion = this.store.getLatestVersion();
+        fs.writeFileSync(this.loggerPath, latestVersion.title);
     };
     Logger.prototype.log = function (versions) {
         var _this = this;
@@ -90,12 +91,17 @@ var Store = (function () {
     Store.prototype.getVersions = function () {
         return this.versions;
     };
-    Store.prototype.getFreshVersions = function (index) {
+    Store.prototype.getFreshVersions = function (title) {
         var freshVersions = [];
-        for (var i = 0; i < index; ++i) {
+        for (var i = 0; i < this.versions.length; ++i) {
+            if (this.versions[i].title === title) {
+                return freshVersions;
+            }
             freshVersions.push(this.versions[i]);
         }
-        return freshVersions;
+    };
+    Store.prototype.getLatestVersion = function () {
+        return this.versions[0];
     };
     return Store;
 }());

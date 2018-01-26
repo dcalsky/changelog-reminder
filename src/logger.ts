@@ -12,8 +12,8 @@ export class Logger {
   }
 
   private getFreshVersions() {
-    const index = parseInt(fs.readFileSync(this.loggerPath).toString());
-    return this.store.getFreshVersions(index);
+    const title = fs.readFileSync(this.loggerPath).toString();
+    return this.store.getFreshVersions(title);
   }
 
   private findLoggerFile(): boolean {
@@ -21,7 +21,8 @@ export class Logger {
   }
 
   private wrtieLoggerFile(): void {
-    fs.writeFileSync(this.loggerPath, 0);
+    const latestVersion = this.store.getLatestVersion();
+    fs.writeFileSync(this.loggerPath, latestVersion.title);
   }
 
   public log(versions: Version[]) {
@@ -33,7 +34,7 @@ export class Logger {
 
   private displayVersion(version: Version) {
     const log = console.log;
-    log(chalk.bgBlue.white(version.title));
+    log(chalk.bgYellow(version.title));
     version.changes.forEach(change => {
       log("\n" + chalk.default.greenBright(change.type));
       change.items.forEach(item => {

@@ -22,11 +22,10 @@ export class Change {
 
 export class Version {
   changes: Change[] = [];
-  id: string;
   title: string;
 
   constructor(title: string) {
-    this.title = title
+    this.title = title;
   }
 }
 
@@ -41,11 +40,18 @@ export class Store {
     return this.versions;
   }
 
-  public getFreshVersions(index: number): Version[] {
+  public getFreshVersions(title: string): Version[] {
     let freshVersions: Version[] = [];
-    for (let i = 0; i < index; ++i) {
+    for (let i = 0; i < this.versions.length; ++i) {
+      if (this.versions[i].title === title) {
+        return freshVersions;
+      }
       freshVersions.push(this.versions[i]);
     }
-    return freshVersions;
+    return freshVersions
+  }
+
+  public getLatestVersion() {
+    return this.versions[0];
   }
 }
