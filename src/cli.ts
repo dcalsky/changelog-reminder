@@ -8,42 +8,40 @@ const defaultLoggerFilename = ".changelogger";
 const argv = yargs
   .usage("Usage: $0 [options]")
   .options({
-    changelogFilename: {
-      alias: "c",
-      description: "<filename> changelog name",
+    changelog: {
+      description: "<path> changelog file relative path",
       requiresArg: true,
       required: false,
       default: defaultChangelogFilename,
       string: true
     },
-    loggerFilename: {
-      alias: "l",
-      description: "<filename> logger file name",
+    logger: {
+      description: "<path> logger file relative path",
       requiresArg: true,
       required: false,
       default: defaultLoggerFilename,
       string: true
     },
     intro: {
-      alias: "v",
-      description: "<boolean> introduce changelog",
+      description: "<boolean> show introduction of changelog",
       required: true,
       boolean: true
     },
-    insure: {
-      alias: "i",
-      description: "<boolean> confirmation dialog after showing changes",
+    confirm: {
+      description: "<boolean> show confirmation dialog at last",
       required: true,
       boolean: true
     }
   })
-  .help('help').alias('help', 'h').argv;
+  .alias("help", "h")
+  .alias("version", "v").argv;
 
-const cPath = path.join(process.cwd(), argv.changelogFilename);
-const lPath = path.join(process.cwd(), argv.loggerFilename);
+const cPath = path.join(process.cwd(), argv.changelog);
+const lPath = path.join(process.cwd(), argv.logger);
 
 const changelogger = new Reminder(cPath, lPath, {
   intro: argv.intro,
-  insure: argv.insure
+  insure: argv.confirm
 });
+
 changelogger.run();
