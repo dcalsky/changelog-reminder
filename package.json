@@ -10,8 +10,7 @@
     "changelog"
   ],
   "scripts": {
-    "watch": "tsc",
-    "build": "rollup -c",
+    "build": "tsc && rollup -c",
     "test": "mocha -r ts-node/register ./test/*.test.ts"
   },
   "dependencies": {
