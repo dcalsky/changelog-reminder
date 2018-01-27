@@ -53,7 +53,7 @@ export class Logger {
       input: process.stdin,
       output: process.stdout
     });
-    rl.question("Do you have known all changes? (Y/n) ", answer => {
+    rl.question("Do you already know all the changes? (Y/n) ", answer => {
       if (answer != "Y") {
         this.log();
         return false;
