@@ -11,13 +11,12 @@ var cheerio = require('cheerio');
 var yargs = require('yargs');
 var path = require('path');
 
+var readline = require("readline");
 var Logger = (function () {
-    function Logger(loggerPath, store) {
+    function Logger(loggerPath, store, options) {
         this.loggerPath = loggerPath;
         this.store = store;
-        var freshVersions = this.getFreshVersions();
-        this.log(freshVersions);
-        this.wrtieLoggerFile();
+        this.options = options;
     }
     Logger.prototype.getFreshVersions = function () {
         var title = this.findLoggerFile() ? fs.readFileSync(this.loggerPath).toString() : "";
@@ -30,11 +29,42 @@ var Logger = (function () {
         var latestVersion = this.store.getLatestVersion();
         fs.writeFileSync(this.loggerPath, latestVersion.title);
     };
-    Logger.prototype.log = function (versions) {
+    Logger.prototype.log = function () {
         var _this = this;
-        versions.forEach(function (version) {
+        this.options.intro && this.displayIntro();
+        var freshVersions = this.getFreshVersions();
+        freshVersions.forEach(function (version) {
             _this.displayVersion(version);
             console.log("#".repeat(20) + "\n");
+        });
+        // If no fresh versions, it's unnecessary to enquire.
+        if (freshVersions.length === 0) {
+            console.log(chalk.green("No any change."));
+            return;
+        }
+        if (this.options.insure && freshVersions.length > 0) {
+            this.inquiry();
+        }
+    };
+    Logger.prototype.displayIntro = function () {
+        var log = console.log;
+        log(this.store.intro);
+    };
+    Logger.prototype.inquiry = function () {
+        var _this = this;
+        var rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        rl.question("Do you have known all changes? (Y/n) ", function (answer) {
+            if (answer != "Y") {
+                _this.log();
+            }
+            else {
+                // If answer is Y, record this current version
+                _this.wrtieLoggerFile();
+                rl.close();
+            }
         });
     };
     Logger.prototype.displayVersion = function (version) {
@@ -81,54 +111,72 @@ var Version = (function () {
 }());
 var Store = (function () {
     function Store() {
-        this.versions = [];
+        this._versions = [];
     }
     Store.prototype.addVersion = function (v) {
-        this.versions.push(v);
+        this._versions.push(v);
     };
-    Store.prototype.getVersions = function () {
-        return this.versions;
+    Object.defineProperty(Store.prototype, "versions", {
+        get: function () {
+            return this._versions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Store.prototype, "intro", {
+        get: function () {
+            return this._intro;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Store.prototype.setIntro = function (intro) {
+        this._intro = intro;
     };
     Store.prototype.getFreshVersions = function (title) {
         var freshVersions = [];
-        for (var i = 0; i < this.versions.length; ++i) {
-            if (this.versions[i].title === title) {
+        for (var i = 0; i < this._versions.length; ++i) {
+            if (this._versions[i].title === title) {
                 return freshVersions;
             }
-            freshVersions.push(this.versions[i]);
+            freshVersions.push(this._versions[i]);
         }
         return freshVersions;
     };
     Store.prototype.getLatestVersion = function () {
-        return this.versions[0];
+        return this._versions[0];
     };
     return Store;
 }());
 
+var INTRO_FLAG = "h1";
 var VERSION_FLAG = "h2";
 var CHANGE_FLAG = "h3";
 var LIST_FLAG = "ul";
 var ParserStatus;
 (function (ParserStatus) {
-    ParserStatus[ParserStatus["VERSION"] = 0] = "VERSION";
-    ParserStatus[ParserStatus["CHANGE"] = 1] = "CHANGE";
-    ParserStatus[ParserStatus["LIST"] = 2] = "LIST";
-    ParserStatus[ParserStatus["END"] = 3] = "END";
+    ParserStatus[ParserStatus["INTRO"] = 0] = "INTRO";
+    ParserStatus[ParserStatus["VERSION"] = 1] = "VERSION";
+    ParserStatus[ParserStatus["CHANGE"] = 2] = "CHANGE";
+    ParserStatus[ParserStatus["LIST"] = 3] = "LIST";
+    ParserStatus[ParserStatus["END"] = 4] = "END";
 })(ParserStatus || (ParserStatus = {}));
 var Parser = (function () {
     function Parser(filePath, store, options) {
-        if (options === void 0) { options = {}; }
         this.filePath = filePath;
         this.store = store;
-        this.status = ParserStatus.VERSION;
+        this.options = options;
+        this.status = ParserStatus.INTRO;
+        this.introText = [];
         var marked_ = marked;
         if (!this.changelogExist()) {
-            throw "Changlog is not existed.";
+            console.error(filePath + " is not existed.");
+            process.exit(1);
         }
         var content = fs.readFileSync(filePath).toString();
         var html = marked_(content);
         this.$ = cheerio.load(html);
-        this.currentElement = this.$("h2");
+        this.currentElement = this.$("h1");
     }
     Parser.prototype.changelogExist = function () {
         return fs.existsSync(this.filePath);
@@ -141,6 +189,16 @@ var Parser = (function () {
         var name = el.tagName;
         var stop = false;
         switch (this.status) {
+            case ParserStatus.INTRO:
+                if (name == VERSION_FLAG) {
+                    this.pushIntroText();
+                    this.status = ParserStatus.VERSION;
+                    stop = true;
+                    break;
+                }
+                // Do not add changlog title into introduction text
+                name !== INTRO_FLAG && this.addIntroText();
+                break;
             case ParserStatus.VERSION:
                 if (name == CHANGE_FLAG) {
                     this.status = ParserStatus.CHANGE;
@@ -185,6 +243,15 @@ var Parser = (function () {
     Parser.prototype.pushChange = function () {
         this.currentVersion.changes.push(this.currentChange);
     };
+    Parser.prototype.addIntroText = function () {
+        var el = this.currentElement.first();
+        this.introText.push(el.text());
+    };
+    Parser.prototype.pushIntroText = function () {
+        var intro = this.introText.join("\n");
+        this.store.setIntro(intro);
+        this.introText = [];
+    };
     Parser.prototype.addVersion = function () {
         var el = this.currentElement.first();
         var name = el[0].tagName;
@@ -221,24 +288,63 @@ var Parser = (function () {
     return Parser;
 }());
 
-var ChangeReminder = (function () {
-    function ChangeReminder(changelogPath, loggerPath) {
+var Reminder = (function () {
+    function Reminder(changelogPath, loggerPath, options) {
         this.changelogPath = changelogPath;
         this.loggerPath = loggerPath;
         this.store = new Store();
-        this.parser = new Parser(changelogPath, this.store);
+        this.options = options || {
+            insure: false,
+            intro: false
+        };
+        this.parser = new Parser(changelogPath, this.store, this.options);
+        this.logger = new Logger(this.loggerPath, this.store, this.options);
     }
-    ChangeReminder.prototype.run = function () {
+    Reminder.prototype.run = function () {
         this.parser.parse();
-        this.logger = new Logger(this.loggerPath, this.store);
+        this.logger.log();
     };
-    return ChangeReminder;
+    return Reminder;
 }());
 
-var defaultChangelogPath = path.join(process.cwd(), "CHANGELOG");
-var defaultLoggerPath = path.join(process.cwd(), ".changelogger");
-var argv = yargs.usage("Usage: $0 -c [changelog path] -l [logger path]")
-    .default("c", defaultChangelogPath)
-    .default("l", defaultLoggerPath).argv;
-var changelogger = new ChangeReminder(argv.c, argv.l);
+var defaultChangelogFilename = "CHANGELOG";
+var defaultLoggerFilename = ".changelogger";
+var argv = yargs.usage("Usage: $0 [options]")
+    .options({
+    changelogFilename: {
+        alias: "c",
+        description: "<filename> changelog name",
+        requiresArg: true,
+        required: false,
+        default: defaultChangelogFilename,
+        string: true
+    },
+    loggerFilename: {
+        alias: "l",
+        description: "<filename> logger file name",
+        requiresArg: true,
+        required: false,
+        default: defaultLoggerFilename,
+        string: true
+    },
+    intro: {
+        alias: "v",
+        description: "<boolean> introduce changelog",
+        required: true,
+        boolean: true
+    },
+    insure: {
+        alias: "i",
+        description: "<boolean> confirmation dialog after showing changes",
+        required: true,
+        boolean: true
+    }
+})
+    .help('help').alias('help', 'h').argv;
+var cPath = path.join(process.cwd(), argv.changelogFilename);
+var lPath = path.join(process.cwd(), argv.loggerFilename);
+var changelogger = new Reminder(cPath, lPath, {
+    intro: argv.intro,
+    insure: argv.insure
+});
 changelogger.run();
