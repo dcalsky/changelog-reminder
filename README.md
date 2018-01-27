@@ -31,7 +31,7 @@ $ npm install changelog-reminder -g
 ```bash
 $ changelog-reminder
 ```
-It will outputs all changes after parsing:![](http://static.noddl.me/15170466898818.jpg)
+It will outputs all changes after parsing:[![asciicast](https://asciinema.org/a/7bhdpHKIIa7psr8dmbjiGrovf.png)](https://asciinema.org/a/7bhdpHKIIa7psr8dmbjiGrovf)
 
 
 ### Installed as a dependency in project 
@@ -50,9 +50,9 @@ Add this starting instruction to NPM scripts, such as this `package.json`:
 Then run `$ npm run start`, the changelog-reminder will  launch.
 
 
-### No changes
+### No changes found
 If no changes found, changelog-reminder will show the status:
-![](http://static.noddl.me/15170472432728.jpg)
+![](./snapshots/nochanges.png?raw=true)
 
 
 
@@ -65,11 +65,9 @@ Usage: `changelog-reminder [options]`. Check all options by typing `$ changelog-
 
 
 `-v` option: changelog-reminder will display the CHANGELOG introduction each time.
-![](http://static.noddl.me/15170468469502.jpg)
-
 
 `-i` option: after displaying the changes, changelog-reminder will enquire your whether already know the changes. It makes sure developers exactly know what's new.
-![](http://static.noddl.me/15170468269091.jpg)
+![](./snapshots/inquiry.png?raw=true)
 
 ## TODOS
 [ ] Parsing process error handle
