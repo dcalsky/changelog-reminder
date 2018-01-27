@@ -14,6 +14,10 @@ enum ParserStatus {
   END
 }
 
+interface ParserOptions {
+  intro: boolean;
+}
+
 export class Parser {
   private $: CheerioStatic;
   private status: ParserStatus = ParserStatus.VERSION;
@@ -21,10 +25,11 @@ export class Parser {
   private currentVersion: Version;
   private currentChange: Change;
 
-  constructor(private filePath: string, public store: Store, options = {}) {
-    const marked_ = marked 
+  constructor(private filePath: string, public store: Store, private options: ParserOptions) {
+    const marked_ = marked;
     if (!this.changelogExist()) {
-      throw "Changlog is not existed.";
+      console.error(`${filePath} is not existed.`);
+      process.exit(1);
     }
     const content = fs.readFileSync(filePath).toString();
     const html = marked_(content);

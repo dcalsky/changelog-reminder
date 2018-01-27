@@ -4,7 +4,7 @@ import path = require("path");
 
 describe("parser", () => {
   const filePath = path.join(__dirname, "CHANGELOG");
-  const parser = new Parser(filePath, new Store());
+  const parser = new Parser(filePath, new Store(), { intro: false });
   parser.parse();
   const versions = parser.store.versions;
 
