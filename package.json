@@ -1,6 +1,6 @@
 {
   "name": "changelog-reminder",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "bin": "bin/cli",
   "main": "bin/cli",
   "ts:main": "src/cli.ts",
@@ -12,8 +12,7 @@
   "scripts": {
     "watch": "tsc",
     "build": "rollup -c",
-    "test": "mocha -r ts-node/register ./test/*.test.ts",
-    "publish": "rollup -c && npm publish"
+    "test": "mocha -r ts-node/register ./test/*.test.ts"
   },
   "dependencies": {
     "chalk": "^2.3.0",

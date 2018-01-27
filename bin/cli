@@ -101,14 +101,14 @@ var Logger = (function () {
     Logger.prototype.log = function () {
         var _this = this;
         var freshVersions = this.getFreshVersions();
-        freshVersions.forEach(function (version) {
-            _this.displayVersion(version);
-        });
         // If no fresh versions, it's unnecessary to enquire.
         if (freshVersions.length === 0) {
             o.showNochange();
         }
         this.options.intro && this.displayIntro();
+        freshVersions.forEach(function (version) {
+            _this.displayVersion(version);
+        });
         if (freshVersions.length > 0) {
             // If answer is Y, record this current version
             this.options.insure && this.inquiry();
