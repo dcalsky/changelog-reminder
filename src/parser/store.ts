@@ -45,6 +45,10 @@ export class Store {
     return this._intro;
   }
 
+  public setIntro(intro: string) {
+    this._intro = intro;
+  }
+
   public getFreshVersions(title: string): Version[] {
     let freshVersions: Version[] = [];
     for (let i = 0; i < this._versions.length; ++i) {

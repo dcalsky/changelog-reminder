@@ -3,11 +3,14 @@ import * as cheerio from "cheerio";
 import * as fs from "fs";
 import { Version, Change, Store } from "./store";
 
+const INTRO_FLAG = "h1";
 const VERSION_FLAG = "h2";
 const CHANGE_FLAG = "h3";
 const LIST_FLAG = "ul";
+const INTRO_TEXT_FLAG = "p";
 
 enum ParserStatus {
+  INTRO,
   VERSION,
   CHANGE,
   LIST,
@@ -20,10 +23,11 @@ interface ParserOptions {
 
 export class Parser {
   private $: CheerioStatic;
-  private status: ParserStatus = ParserStatus.VERSION;
+  private status: ParserStatus = ParserStatus.INTRO;
   private currentElement: Cheerio;
   private currentVersion: Version;
   private currentChange: Change;
+  private introText: string[] = [];
 
   constructor(private filePath: string, public store: Store, private options: ParserOptions) {
     const marked_ = marked;
@@ -34,7 +38,7 @@ export class Parser {
     const content = fs.readFileSync(filePath).toString();
     const html = marked_(content);
     this.$ = cheerio.load(html);
-    this.currentElement = this.$("h2");
+    this.currentElement = this.$("h1");
   }
 
   private changelogExist(): boolean {
@@ -49,6 +53,16 @@ export class Parser {
     const name = el.tagName;
     let stop = false;
     switch (this.status) {
+      case ParserStatus.INTRO:
+        if (name == VERSION_FLAG) {
+          this.pushIntroText();
+          this.status = ParserStatus.VERSION;
+          stop = true;
+          break;
+        }
+        // Do not add changlog title into introduction text
+        name !== INTRO_FLAG && this.addIntroText();
+        break;
       case ParserStatus.VERSION:
         if (name == CHANGE_FLAG) {
           this.status = ParserStatus.CHANGE;
@@ -92,6 +106,15 @@ export class Parser {
   }
   private pushChange() {
     this.currentVersion.changes.push(this.currentChange);
+  }
+  private addIntroText() {
+    const el = this.currentElement.first();
+    this.introText.push(el.text());
+  }
+  private pushIntroText() {
+    const intro = this.introText.join("\n");
+    this.store.setIntro(intro);
+    this.introText = [];
   }
   private addVersion() {
     const el = this.currentElement.first();

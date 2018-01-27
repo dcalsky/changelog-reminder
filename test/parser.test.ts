@@ -28,6 +28,12 @@ describe("parser", () => {
 
   it("The change name", () => {
     const change = versions[3].changes[0];
-    expect(change.type === "Changed");
+    expect(change.type).to.eql("Changed");
+  });
+
+  it("Show the introduction", () => {
+    const intro = parser.store.intro;
+    const CHNAGELOG_INTRO = `All notable changes to this project will be documented in this file.The format is based on Keep a Changelog.`;
+    expect(intro).to.eql(CHNAGELOG_INTRO);
   });
 });

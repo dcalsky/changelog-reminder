@@ -5,6 +5,7 @@ const readline = require("readline");
 
 interface LoggerOptions {
   insure: boolean;
+  intro: boolean;
 }
 
 export class Logger {
@@ -25,6 +26,7 @@ export class Logger {
   }
 
   public log() {
+    this.options.intro && this.displayIntro()
     const freshVersions = this.getFreshVersions();
     freshVersions.forEach(version => {
       this.displayVersion(version);
@@ -38,6 +40,11 @@ export class Logger {
     if (this.options.insure && freshVersions.length > 0) {
       this.inquiry();
     }
+  }
+
+  private displayIntro() {
+    const log = console.log;
+    log(this.store.intro);
   }
 
   private inquiry() {
