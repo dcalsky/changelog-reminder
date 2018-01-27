@@ -123,7 +123,7 @@ var Logger = (function () {
             input: process.stdin,
             output: process.stdout
         });
-        rl.question("Do you have known all changes? (Y/n) ", function (answer) {
+        rl.question("Do you already know all the changes? (Y/n) ", function (answer) {
             if (answer != "Y") {
                 _this.log();
                 return false;
@@ -249,6 +249,9 @@ var Parser = (function () {
     Parser.prototype.parse = function () {
         var el = this.currentElement.first()[0];
         if (!el) {
+            // Push the last version
+            this.pushChange();
+            this.pushVersion();
             return;
         }
         var name = el.tagName;

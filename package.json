@@ -1,6 +1,6 @@
 {
   "name": "changelog-reminder",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "bin": "bin/cli",
   "main": "bin/cli",
   "ts:main": "src/cli.ts",
