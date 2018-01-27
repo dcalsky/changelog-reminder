@@ -37,7 +37,7 @@ const argv = yargs
       boolean: true
     }
   })
-  .help().argv;
+  .help('help').alias('help', 'h').argv;
 
 const cPath = path.join(process.cwd(), argv.changelogFilename);
 const lPath = path.join(process.cwd(), argv.loggerFilename);
