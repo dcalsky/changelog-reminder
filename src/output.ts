@@ -63,7 +63,7 @@ export class Output {
       chars: CHARS
     });
     const statusText = chalk.bold.blue("Status");
-    this.table.push([statusText], ["No any change"]);
+    this.table.push([statusText], ["No changes found."]);
   }
 
   public show() {
