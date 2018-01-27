@@ -37,10 +37,12 @@ export class Logger {
     freshVersions.forEach(version => {
       this.displayVersion(version);
     });
-    
-    if (freshVersions.length > 0) {
-      // If answer is Y, record this current version
-      this.options.insure && this.inquiry();
+
+    if (freshVersions.length === 0) return;
+    if (this.options.insure) {
+      this.inquiry();
+    } else {
+      this.wrtieLoggerFile();
     }
   }
 
@@ -56,11 +58,9 @@ export class Logger {
     rl.question("Do you already know all the changes? (Y/n) ", answer => {
       if (answer != "Y") {
         this.log();
-        return false;
       } else {
         this.wrtieLoggerFile();
         rl.close();
-        return true;
       }
     });
   }
