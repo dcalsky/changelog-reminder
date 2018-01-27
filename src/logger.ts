@@ -1,13 +1,15 @@
 import * as fs from "fs";
 import * as chalk from "chalk";
 import { Store, Version } from "./parser";
+import { Output } from "./output";
 const readline = require("readline");
+const o = new Output();
+const log = console.log;
 
 interface LoggerOptions {
   insure: boolean;
   intro: boolean;
 }
-
 export class Logger {
   constructor(private loggerPath: string, private store: Store, private options: LoggerOptions) {}
 
@@ -26,25 +28,25 @@ export class Logger {
   }
 
   public log() {
-    this.options.intro && this.displayIntro()
     const freshVersions = this.getFreshVersions();
     freshVersions.forEach(version => {
       this.displayVersion(version);
-      console.log("#".repeat(20) + "\n");
     });
+
     // If no fresh versions, it's unnecessary to enquire.
     if (freshVersions.length === 0) {
-      console.log(chalk.green("No any change."))
-      return
+      o.showNochange();
     }
+    this.options.intro && this.displayIntro();
+
     if (this.options.insure && freshVersions.length > 0) {
-      this.inquiry();
+      // If answer is Y, record this current version
+      this.inquiry() && this.wrtieLoggerFile();
     }
   }
 
   private displayIntro() {
-    const log = console.log;
-    log(this.store.intro);
+    o.showIntro(this.store.intro);
   }
 
   private inquiry() {
@@ -55,22 +57,19 @@ export class Logger {
     rl.question("Do you have known all changes? (Y/n) ", answer => {
       if (answer != "Y") {
         this.log();
+        return false;
       } else {
-        // If answer is Y, record this current version
-        this.wrtieLoggerFile();
         rl.close();
+        return true;
       }
     });
   }
 
   private displayVersion(version: Version) {
-    const log = console.log;
-    log(chalk.bgYellow(version.title));
+    o.addVersion(version.title);
     version.changes.forEach(change => {
-      log("\n" + chalk.default.greenBright(change.type));
-      change.items.forEach(item => {
-        log(item);
-      });
+      o.addChange(change.type, change.items);
     });
+    o.show();
   }
 }
