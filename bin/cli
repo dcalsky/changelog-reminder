@@ -70,9 +70,9 @@ var Output = (function () {
     Output.prototype.orderChangeItems = function (items) {
         return items
             .map(function (item, i) {
-            var order = chalk.bold.gray("" + (i + 1));
-            return order + ". " + item;
-        })
+                var order = chalk.bold.gray("" + (i + 1));
+                return order + ". " + item;
+            })
             .join("\n");
     };
     return Output;
@@ -123,7 +123,7 @@ var Logger = (function () {
             input: process.stdin,
             output: process.stdout
         });
-        rl.question("Do you have known all changes? (Y/n) ", function (answer) {
+        rl.question("Changes acknowledged (Y/n) ", function (answer) {
             if (answer != "Y") {
                 _this.log();
                 return false;
@@ -376,35 +376,35 @@ var defaultChangelogFilename = "CHANGELOG";
 var defaultLoggerFilename = ".changelogger";
 var argv = yargs.usage("Usage: $0 [options]")
     .options({
-    changelogFilename: {
-        alias: "c",
-        description: "<filename> changelog name",
-        requiresArg: true,
-        required: false,
-        default: defaultChangelogFilename,
-        string: true
-    },
-    loggerFilename: {
-        alias: "l",
-        description: "<filename> logger file name",
-        requiresArg: true,
-        required: false,
-        default: defaultLoggerFilename,
-        string: true
-    },
-    intro: {
-        alias: "v",
-        description: "<boolean> introduce changelog",
-        required: true,
-        boolean: true
-    },
-    insure: {
-        alias: "i",
-        description: "<boolean> confirmation dialog after showing changes",
-        required: true,
-        boolean: true
-    }
-})
+        changelogFilename: {
+            alias: "c",
+            description: "<filename> changelog name",
+            requiresArg: true,
+            required: false,
+            default: defaultChangelogFilename,
+            string: true
+        },
+        loggerFilename: {
+            alias: "l",
+            description: "<filename> logger file name",
+            requiresArg: true,
+            required: false,
+            default: defaultLoggerFilename,
+            string: true
+        },
+        intro: {
+            alias: "v",
+            description: "<boolean> introduce changelog",
+            required: true,
+            boolean: true
+        },
+        insure: {
+            alias: "i",
+            description: "<boolean> confirmation dialog after showing changes",
+            required: true,
+            boolean: true
+        }
+    })
     .help('help').alias('help', 'h').argv;
 var cPath = path.join(process.cwd(), argv.changelogFilename);
 var lPath = path.join(process.cwd(), argv.loggerFilename);

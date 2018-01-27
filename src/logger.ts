@@ -11,7 +11,7 @@ interface LoggerOptions {
   intro: boolean;
 }
 export class Logger {
-  constructor(private loggerPath: string, private store: Store, private options: LoggerOptions) {}
+  constructor(private loggerPath: string, private store: Store, private options: LoggerOptions) { }
 
   private getFreshVersions() {
     const title = this.findLoggerFile() ? fs.readFileSync(this.loggerPath).toString() : "";
@@ -37,7 +37,7 @@ export class Logger {
     freshVersions.forEach(version => {
       this.displayVersion(version);
     });
-    
+
     if (freshVersions.length > 0) {
       // If answer is Y, record this current version
       this.options.insure && this.inquiry();
@@ -53,7 +53,7 @@ export class Logger {
       input: process.stdin,
       output: process.stdout
     });
-    rl.question("Do you already know all the changes? (Y/n) ", answer => {
+    rl.question("Changes acknowledged. (Y/n) ", answer => {
       if (answer != "Y") {
         this.log();
         return false;
