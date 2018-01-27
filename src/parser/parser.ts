@@ -48,6 +48,9 @@ export class Parser {
   public parse(): void {
     const el = this.currentElement.first()[0];
     if (!el) {
+      // Push the last version
+      this.pushChange()
+      this.pushVersion();
       return;
     }
     const name = el.tagName;
