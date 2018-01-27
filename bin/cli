@@ -1,17 +1,86 @@
 #!/usr/bin/env node
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
 var fs = require('fs');
-var chalk = require('chalk');
-var chalk__default = _interopDefault(chalk);
 var marked = require('marked');
 var cheerio = require('cheerio');
 var yargs = require('yargs');
 var path = require('path');
 
+var chalk = require("chalk");
+var Table = require("cli-table-redemption");
+var CHARS = {
+    top: "═",
+    "top-mid": "╤",
+    "top-left": "╔",
+    "top-right": "╗",
+    bottom: "═",
+    "bottom-mid": "╧",
+    "bottom-left": "╚",
+    "bottom-right": "╝",
+    left: "║",
+    "left-mid": "╟",
+    mid: "─",
+    "mid-mid": "┼",
+    right: "║",
+    "right-mid": "╢",
+    middle: "│"
+};
+var log = console.log;
+var Output = (function () {
+    function Output(options) {
+        this.options = {
+            versionTitleColor: chalk.bold.magentaBright,
+            changeTypeColor: chalk.bold.cyanBright
+        };
+        // this.options = this.options
+    }
+    Output.prototype.addVersion = function (title) {
+        title = this.options.versionTitleColor(title);
+        this.table = new Table({
+            chars: CHARS
+        });
+        this.table.push([("Version: " + title)]);
+    };
+    Output.prototype.addChange = function (type, items) {
+        type = this.options.changeTypeColor(type);
+        this.table.push([("Change: " + type)]);
+        this.table.push([this.orderChangeItems(items)]);
+    };
+    Output.prototype.showIntro = function (intro, show) {
+        if (show === void 0) { show = true; }
+        this.table = this.table || new Table({
+            chars: CHARS
+        });
+        var introTitle = chalk.bold.blue("CHANGELOG NOTE");
+        this.table.push([introTitle], [intro]);
+        show && this.show();
+    };
+    Output.prototype.showNochange = function (show) {
+        if (show === void 0) { show = true; }
+        this.table = new Table({
+            chars: CHARS
+        });
+        var statusText = chalk.bold.blue("Status");
+        this.table.push([statusText], ["No any change"]);
+    };
+    Output.prototype.show = function () {
+        log(this.table.toString());
+    };
+    Output.prototype.orderChangeItems = function (items) {
+        return items
+            .map(function (item, i) {
+            var order = chalk.bold.gray("" + (i + 1));
+            return order + ". " + item;
+        })
+            .join("\n");
+    };
+    return Output;
+}());
+
 var readline = require("readline");
+var o = new Output();
+var log$1 = console.log;
 var Logger = (function () {
     function Logger(loggerPath, store, options) {
         this.loggerPath = loggerPath;
@@ -31,24 +100,22 @@ var Logger = (function () {
     };
     Logger.prototype.log = function () {
         var _this = this;
-        this.options.intro && this.displayIntro();
         var freshVersions = this.getFreshVersions();
         freshVersions.forEach(function (version) {
             _this.displayVersion(version);
-            console.log("#".repeat(20) + "\n");
         });
         // If no fresh versions, it's unnecessary to enquire.
         if (freshVersions.length === 0) {
-            console.log(chalk.green("No any change."));
-            return;
+            o.showNochange();
         }
-        if (this.options.insure && freshVersions.length > 0) {
-            this.inquiry();
+        this.options.intro && this.displayIntro();
+        if (freshVersions.length > 0) {
+            // If answer is Y, record this current version
+            this.options.insure && this.inquiry();
         }
     };
     Logger.prototype.displayIntro = function () {
-        var log = console.log;
-        log(this.store.intro);
+        o.showIntro(this.store.intro);
     };
     Logger.prototype.inquiry = function () {
         var _this = this;
@@ -59,23 +126,21 @@ var Logger = (function () {
         rl.question("Do you have known all changes? (Y/n) ", function (answer) {
             if (answer != "Y") {
                 _this.log();
+                return false;
             }
             else {
-                // If answer is Y, record this current version
                 _this.wrtieLoggerFile();
                 rl.close();
+                return true;
             }
         });
     };
     Logger.prototype.displayVersion = function (version) {
-        var log = console.log;
-        log(chalk.bgYellow(version.title));
+        o.addVersion(version.title);
         version.changes.forEach(function (change) {
-            log("\n" + chalk__default.greenBright(change.type));
-            change.items.forEach(function (item) {
-                log(item);
-            });
+            o.addChange(change.type, change.items);
         });
+        o.show();
     };
     return Logger;
 }());
