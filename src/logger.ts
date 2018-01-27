@@ -29,19 +29,18 @@ export class Logger {
 
   public log() {
     const freshVersions = this.getFreshVersions();
-    freshVersions.forEach(version => {
-      this.displayVersion(version);
-    });
-
     // If no fresh versions, it's unnecessary to enquire.
     if (freshVersions.length === 0) {
       o.showNochange();
     }
     this.options.intro && this.displayIntro();
-
-    if (freshVersions.length > 0 ) {
+    freshVersions.forEach(version => {
+      this.displayVersion(version);
+    });
+    
+    if (freshVersions.length > 0) {
       // If answer is Y, record this current version
-      this.options.insure && this.inquiry()
+      this.options.insure && this.inquiry();
     }
   }
 
