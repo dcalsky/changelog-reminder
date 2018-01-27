@@ -39,9 +39,9 @@ export class Logger {
     }
     this.options.intro && this.displayIntro();
 
-    if (this.options.insure && freshVersions.length > 0) {
+    if (freshVersions.length > 0 ) {
       // If answer is Y, record this current version
-      this.inquiry() && this.wrtieLoggerFile();
+      this.options.insure && this.inquiry()
     }
   }
 
@@ -59,6 +59,7 @@ export class Logger {
         this.log();
         return false;
       } else {
+        this.wrtieLoggerFile();
         rl.close();
         return true;
       }
