@@ -49,12 +49,6 @@ Add this starting instruction to NPM scripts, such as this `package.json`:
 
 Then run `$ npm run start`, the changelog-reminder will  launch.
 
-`-v` option: changelog-reminder will display the CHANGELOG introduction each time.
-![](http://static.noddl.me/15170468469502.jpg)
-
-
-`-i` option: after displaying the changes, changelog-reminder will enquire your whether already know the changes. It makes sure developers exactly know what's new.
-![](http://static.noddl.me/15170468269091.jpg)
 
 ### No changes
 If no changes found, changelog-reminder will show the status:
@@ -65,9 +59,19 @@ If no changes found, changelog-reminder will show the status:
 ## Options
 Usage: `changelog-reminder [options]`. Check all options by typing `$ changelog-reminder -h`
 
-`-c`: Specify the changelog file which's path is relative to the current shell location.
+`-c`: Specify the changelog file which's path is relative to the current shell location. Example: `$ changelog-reminder -c ../../CHANGELOG`
 
-`-l`: Specify the logger file, it records which verison  you are staying at.
+`-l`: Specify the logger file, it records which verison  you are staying at. `$ changelog-reminder -c ../../.changelogger`
 
 
+`-v` option: changelog-reminder will display the CHANGELOG introduction each time.
+![](http://static.noddl.me/15170468469502.jpg)
+
+
+`-i` option: after displaying the changes, changelog-reminder will enquire your whether already know the changes. It makes sure developers exactly know what's new.
+![](http://static.noddl.me/15170468269091.jpg)
+
+## TODOS
+[ ] Parsing process error handle
+[ ] Custom config for display (text, color etc...)
 
