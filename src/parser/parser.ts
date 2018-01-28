@@ -2,6 +2,7 @@ import * as marked from "marked";
 import * as cheerio from "cheerio";
 import * as fs from "fs";
 import { Version, Change, Store } from "./store";
+import { Config } from "../config";
 
 const INTRO_FLAG = "h1";
 const VERSION_FLAG = "h2";
@@ -17,10 +18,6 @@ enum ParserStatus {
   END
 }
 
-interface ParserOptions {
-  intro: boolean;
-}
-
 export class Parser {
   private $: CheerioStatic;
   private status: ParserStatus = ParserStatus.INTRO;
@@ -29,27 +26,27 @@ export class Parser {
   private currentChange: Change;
   private introText: string[] = [];
 
-  constructor(private filePath: string, public store: Store, private options: ParserOptions) {
+  constructor(private config: Config, public store: Store) {
     const marked_ = marked;
     if (!this.changelogExist()) {
-      console.error(`${filePath} is not existed.`);
+      console.error(`${config.changelog} is not existed.`);
       process.exit(1);
     }
-    const content = fs.readFileSync(filePath).toString();
+    const content = fs.readFileSync(config.changelog).toString();
     const html = marked_(content);
     this.$ = cheerio.load(html);
     this.currentElement = this.$("h1");
   }
 
   private changelogExist(): boolean {
-    return fs.existsSync(this.filePath);
+    return fs.existsSync(this.config.changelog);
   }
 
   public parse(): void {
     const el = this.currentElement.first()[0];
     if (!el) {
       // Push the last version
-      this.pushChange()
+      this.pushChange();
       this.pushVersion();
       return;
     }

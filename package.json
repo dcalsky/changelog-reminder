@@ -17,6 +17,7 @@
     "chalk": "^2.3.0",
     "cheerio": "^1.0.0-rc.2",
     "cli-table-redemption": "^1.0.1",
+    "js-yaml": "^3.10.0",
     "marked": "^0.3.7",
     "yargs": "^11.0.0"
   },

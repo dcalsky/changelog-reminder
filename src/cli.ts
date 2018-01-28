@@ -1,47 +1,28 @@
 import * as yargs from "yargs";
 import * as path from "path";
+import * as fs from "fs";
 import { Reminder } from "./reminder";
+import { Config } from "./config";
+import { Argv } from "./config";
 
-const defaultChangelogFilename = "CHANGELOG";
-const defaultLoggerFilename = ".changelogger";
+interface IArgv extends Argv, yargs.Arguments {}
 
+const defaultConfigPath = "change-reminder.yaml";
 const argv = yargs
   .usage("Usage: $0 [options]")
   .options({
-    changelog: {
-      description: "<path> changelog file relative path",
+    config: {
+      description: "<path> config file relative path",
+      alias: "c",
       requiresArg: true,
       required: false,
-      default: defaultChangelogFilename,
+      default: defaultConfigPath,
       string: true
-    },
-    logger: {
-      description: "<path> logger file relative path",
-      requiresArg: true,
-      required: false,
-      default: defaultLoggerFilename,
-      string: true
-    },
-    intro: {
-      description: "<boolean> show introduction of changelog",
-      required: true,
-      boolean: true
-    },
-    confirm: {
-      description: "<boolean> show confirmation dialog at last",
-      required: true,
-      boolean: true
     }
   })
   .alias("help", "h")
   .alias("version", "v").argv;
 
-const cPath = path.join(process.cwd(), argv.changelog);
-const lPath = path.join(process.cwd(), argv.logger);
-
-const changelogger = new Reminder(cPath, lPath, {
-  intro: argv.intro,
-  insure: argv.confirm
-});
-
+const config: Config = new Config(argv as IArgv);
+const changelogger = new Reminder(config);
 changelogger.run();

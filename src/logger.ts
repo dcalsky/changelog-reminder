@@ -2,29 +2,26 @@ import * as fs from "fs";
 import * as chalk from "chalk";
 import { Store, Version } from "./parser";
 import { Output } from "./output";
+import { Config } from "./config";
 const readline = require("readline");
 const o = new Output();
 const log = console.log;
 
-interface LoggerOptions {
-  insure: boolean;
-  intro: boolean;
-}
 export class Logger {
-  constructor(private loggerPath: string, private store: Store, private options: LoggerOptions) { }
+  constructor(private config: Config, private store: Store) {}
 
   private getFreshVersions() {
-    const title = this.findLoggerFile() ? fs.readFileSync(this.loggerPath).toString() : "";
+    const title = this.findLoggerFile() ? fs.readFileSync(this.config.logger).toString() : "";
     return this.store.getFreshVersions(title);
   }
 
   private findLoggerFile(): boolean {
-    return fs.existsSync(this.loggerPath);
+    return fs.existsSync(this.config.logger);
   }
 
   private wrtieLoggerFile(): void {
     const latestVersion = this.store.getLatestVersion();
-    fs.writeFileSync(this.loggerPath, latestVersion.title);
+    fs.writeFileSync(this.config.logger, latestVersion.title);
   }
 
   public log() {
@@ -33,13 +30,13 @@ export class Logger {
     if (freshVersions.length === 0) {
       o.showNochange();
     }
-    this.options.intro && this.displayIntro();
+    this.config.showIntro && this.displayIntro();
     freshVersions.forEach(version => {
       this.displayVersion(version);
     });
 
     if (freshVersions.length === 0) return;
-    if (this.options.insure) {
+    if (this.config.confirm) {
       this.inquiry();
     } else {
       this.wrtieLoggerFile();

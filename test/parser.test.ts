@@ -1,11 +1,14 @@
 import { Parser, Change, Store } from "../src/parser/index";
 import { expect } from "chai";
 import path = require("path");
+import { Config } from "../src/config";
 
 describe("parser", () => {
   const filePath = path.join(__dirname, "CHANGELOG");
-  const parser = new Parser(filePath, new Store(), { intro: false });
+  const config = new Config();
+  const parser = new Parser(config, new Store());
   parser.parse();
+
   const versions = parser.store.versions;
 
   it("Unreleased version", () => {

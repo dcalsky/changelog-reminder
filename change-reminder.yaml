@@ -1,0 +1,3 @@
+changelog: ./test/CHANGELOG
+showIntro: true
+confirm: true
