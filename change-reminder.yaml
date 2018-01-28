@@ -1,3 +1,5 @@
-changelog: ./test/CHANGELOG
+changelog: ./CHANGELOG
+logger: ./.change-reminder
 showIntro: true
-confirm: true
+confirm: false
+
