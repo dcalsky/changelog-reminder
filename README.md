@@ -42,7 +42,7 @@ Add this starting instruction to NPM scripts, such as this `package.json`:
   "name": "example",
   "version": "0.0.1",
   "scripts": {
-    "start": "changelog-reminder -v -i && node main.js"
+    "start": "changelog-reminder && node main.js"
   }
 }
 ```
@@ -55,23 +55,36 @@ If no changes found, changelog-reminder will show the status:
 ![](./snapshots/nochanges.png?raw=true)
 
 
-
-## Options
+## Usage
 Usage: `changelog-reminder [options]`. Check all options by typing `$ changelog-reminder -h`
 
-`-c`: Specify the changelog file which's path is relative to the current shell location. Example: `$ changelog-reminder -c ../../CHANGELOG`
 
-`-l`: Specify the logger file, it records which verison  you are staying at. `$ changelog-reminder -c ../../.changelogger`
+### Config file
+Changelog-reminder will load `changelog-reminder.yaml` as config file by default. Also you can use `changelog-reminder -c <file relative path>` to specify a config file. 
+
+If no config file is existed in your project, the config data will use default value.
+
+```yaml
+# changelog-reminder.yaml
+
+changelog: ./CHANGELOG
+logger: ./.change-reminder
+showIntro: true
+confirm: false
+```
+
+- `changelog`: Specify the changelog file which's path is relative to the current shell location. Default: `$ ./CHANGELOG`
+
+- `logger`: Specify the logger file, it records which verison  you are staying at. Default: `.changelogger`
 
 
-`-v` option: changelog-reminder will display the CHANGELOG introduction each time.
+- `showIntro` option: changelog-reminder will display the CHANGELOG introduction each time. Default: `true`
 
-`-i` option: after displaying the changes, changelog-reminder will enquire your whether already know the changes. It makes sure developers exactly know what's new.
-![](./snapshots/inquiry.png?raw=true)
+- `confirm` option: after displaying the changes, changelog-reminder will enquire your whether already know the changes. It makes sure developers exactly know what's new. Default: `false` ![](./snapshots/inquiry.png?raw=true)
 
 ## TODOS
 - [ ] Parsing process error handle
-- [ ] Custom config for display (text, color etc...)
+- [x] Custom config for display (text, color etc...)
 
 
 
