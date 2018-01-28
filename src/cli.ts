@@ -7,7 +7,7 @@ import { Argv } from "./config";
 
 interface IArgv extends Argv, yargs.Arguments {}
 
-const defaultConfigPath = "change-reminder.yaml";
+const defaultConfigPath = "changelog-reminder.yaml";
 const argv = yargs
   .usage("Usage: $0 [options]")
   .options({

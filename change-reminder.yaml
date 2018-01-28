@@ -1,5 +1,0 @@
-changelog: ./CHANGELOG
-logger: ./.change-reminder
-showIntro: true
-confirm: false
-

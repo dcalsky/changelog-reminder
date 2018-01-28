@@ -115,7 +115,7 @@ $RECYCLE.BIN/
 dist/
 .idea/
 
-.change-reminder
+.changelog-reminder
 
 .vscode/
 bin/

@@ -4,8 +4,8 @@ import * as yaml from "js-yaml";
 import { Arguments } from "yargs";
 
 const defaultChangelogPath = "CHANGELOG";
-const defaultLoggerPath = ".change-reminder";
-const defaultConfigPath = "change-reminder.yaml";
+const defaultLoggerPath = ".changelog-reminder";
+const defaultConfigPath = "changelog-reminder.yaml";
 
 export interface Argv {
   config: string;
