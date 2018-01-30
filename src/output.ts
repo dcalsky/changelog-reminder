@@ -21,7 +21,7 @@ const CHARS = {
 
 const log = console.log;
 
-interface OutputOptions {
+export interface OutputOptions {
   versionTitleColor: any;
   changeTypeColor: any;
 }
@@ -50,9 +50,11 @@ export class Output {
   }
 
   public showIntro(intro: string, show: boolean = true) {
-    this.table = this.table || new Table({
-      chars: CHARS
-    });
+    this.table =
+      this.table ||
+      new Table({
+        chars: CHARS
+      });
     const introTitle = chalk.bold.blue("CHANGELOG NOTE");
     this.table.push([introTitle], [intro]);
     show && this.show();

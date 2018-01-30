@@ -2,13 +2,11 @@
   "name": "changelog-reminder",
   "version": "0.4.1",
   "bin": "bin/cli",
-  "main": "bin/cli",
+  "main": "dist/cli.js",
   "ts:main": "src/cli.ts",
   "author": "dcalsky",
   "license": "Apache-2.0",
-  "keywords": [
-    "changelog"
-  ],
+  "keywords": ["changelog", "reminder"],
   "scripts": {
     "build": "tsc && rollup -c",
     "test": "mocha -r ts-node/register ./test/*.test.ts"
