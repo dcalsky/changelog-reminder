@@ -1,14 +1,14 @@
 {
   "name": "changelog-reminder",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "bin": "bin/cli",
-  "main": "dist/cli.js",
-  "ts:main": "src/cli.ts",
   "author": "dcalsky",
   "license": "Apache-2.0",
   "keywords": ["changelog", "reminder"],
   "scripts": {
-    "build": "tsc && rollup -c",
+    "build": "NODE_ENV=production node fuse.js",
+    "prepublish": "yarn build",
+    "dev": "tsc -w",
     "test": "mocha -r ts-node/register ./test/*.test.ts"
   },
   "dependencies": {
@@ -28,9 +28,8 @@
     "@types/node": "^8.5.1",
     "@types/yargs": "^10.0.1",
     "chai": "^4.1.2",
+    "fuse-box": "^3.0.2",
     "mocha": "^4.0.1",
-    "rollup": "^0.55.0",
-    "rollup-plugin-typescript": "^0.8.1",
     "ts-node": "^4.0.2",
     "typescript": "^2.6.2"
   }

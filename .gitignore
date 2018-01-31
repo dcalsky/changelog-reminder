@@ -118,4 +118,5 @@ dist/
 .changelog-reminder
 
 .vscode/
+.fusebox/
 bin/

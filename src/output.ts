@@ -1,4 +1,4 @@
-const chalk = require("chalk");
+import chalk = require("chalk");
 const Table = require("cli-table-redemption");
 
 const CHARS = {
@@ -29,8 +29,8 @@ export interface OutputOptions {
 export class Output {
   table: any;
   private options: OutputOptions = {
-    versionTitleColor: chalk.bold.magentaBright,
-    changeTypeColor: chalk.bold.cyanBright
+    versionTitleColor: chalk.default.bold.magentaBright,
+    changeTypeColor: chalk.default.bold.cyanBright
   };
   constructor(options?: OutputOptions) {
     // this.options = this.options
@@ -55,7 +55,7 @@ export class Output {
       new Table({
         chars: CHARS
       });
-    const introTitle = chalk.bold.blue("CHANGELOG NOTE");
+    const introTitle = chalk.default.bold.blue("CHANGELOG NOTE");
     this.table.push([introTitle], [intro]);
     show && this.show();
   }
@@ -64,7 +64,7 @@ export class Output {
     this.table = new Table({
       chars: CHARS
     });
-    const statusText = chalk.bold.blue("Status");
+    const statusText = chalk.default.bold.blue("Status");
     this.table.push([statusText], ["No changes found."]);
   }
 
@@ -75,7 +75,7 @@ export class Output {
   private orderChangeItems(items: string[]): string {
     return items
       .map((item, i) => {
-        const order = chalk.bold.gray(`${i + 1}`);
+        const order = chalk.default.bold.gray(`${i + 1}`);
         return `${order}. ${item}`;
       })
       .join("\n");

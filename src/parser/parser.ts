@@ -1,6 +1,6 @@
-import * as marked from "marked";
-import * as cheerio from "cheerio";
-import * as fs from "fs";
+import marked = require("marked");
+import cheerio = require("cheerio");
+import fs = require("fs");
 import { Version, Change, Store } from "./store";
 import { Config } from "../config";
 

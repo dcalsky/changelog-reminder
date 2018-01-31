@@ -1,5 +1,5 @@
-import * as path from "path";
-import * as fs from "fs";
+import path = require("path");
+import fs = require("fs");
 import * as yaml from "js-yaml";
 import { Arguments } from "yargs";
 

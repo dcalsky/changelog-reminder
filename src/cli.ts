@@ -1,6 +1,6 @@
-import * as yargs from "yargs";
-import * as path from "path";
-import * as fs from "fs";
+import yargs = require("yargs");
+import path = require("path");
+import fs = require("fs");
 import { Reminder } from "./reminder";
 import { Config } from "./config";
 import { Argv } from "./config";

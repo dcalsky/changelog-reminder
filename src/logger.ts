@@ -1,9 +1,10 @@
-import * as fs from "fs";
-import * as chalk from "chalk";
+import fs = require("fs");
+import chalk = require("chalk");
 import { Store, Version } from "./parser";
 import { Output } from "./output";
 import { Config } from "./config";
-const readline = require("readline");
+import readline = require("readline");
+
 const o = new Output();
 const log = console.log;
 
@@ -11,7 +12,9 @@ export class Logger {
   constructor(private config: Config, private store: Store) {}
 
   private getFreshVersions() {
-    const title = this.findLoggerFile() ? fs.readFileSync(this.config.logger).toString() : "";
+    const title = this.findLoggerFile()
+      ? fs.readFileSync(this.config.logger).toString()
+      : "";
     return this.store.getFreshVersions(title);
   }
 
