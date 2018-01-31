@@ -1,8 +1,9 @@
 import marked = require("marked");
 import cheerio = require("cheerio");
 import fs = require("fs");
-import { Version, Change, Store } from "./store";
+import { Version, Change, Store, ChangeTypes } from "./store";
 import { Config } from "../config";
+import { ParseError } from "./error";
 
 const INTRO_FLAG = "h1";
 const VERSION_FLAG = "h2";
@@ -10,12 +11,12 @@ const CHANGE_FLAG = "h3";
 const LIST_FLAG = "ul";
 const INTRO_TEXT_FLAG = "p";
 
-enum ParserStatus {
-  INTRO,
-  VERSION,
-  CHANGE,
-  LIST,
-  END
+export enum ParserStatus {
+  INTRO = "introduction",
+  VERSION = "version",
+  CHANGE = "change",
+  LIST = "change list",
+  END = "end"
 }
 
 export class Parser {
@@ -40,6 +41,11 @@ export class Parser {
 
   private changelogExist(): boolean {
     return fs.existsSync(this.config.changelog);
+  }
+
+  private parseError(err: ParseError) {
+    console.log(err.message);
+    process.exit(1);
   }
 
   public parse(): void {
@@ -120,7 +126,7 @@ export class Parser {
     const el = this.currentElement.first();
     const name = el[0].tagName;
     if (name !== VERSION_FLAG) {
-      throw "error h2";
+      this.parseError(new ParseError(ParserStatus.VERSION));
     }
     this.currentVersion = new Version(el.text());
   }
@@ -128,19 +134,19 @@ export class Parser {
   private addChange() {
     const name = this.currentElement.first()[0].tagName;
     if (name !== CHANGE_FLAG) {
-      throw "error h3";
+      this.parseError(new ParseError(ParserStatus.CHANGE));
     }
     this.currentChange = new Change();
     const text = this.currentElement[0].children[0].data;
     if (!this.currentChange.setType(text)) {
-      throw "error set type";
+      this.parseError(new ParseError(ParserStatus.LIST, ChangeTypes, text));
     }
   }
 
   private addList() {
     const name = this.currentElement.first()[0].tagName;
     if (name !== LIST_FLAG) {
-      throw "error ul";
+      this.parseError(new ParseError(ParserStatus.LIST));
     }
     const list = this.currentElement.first().children("li");
     list.each((i, el) => {
