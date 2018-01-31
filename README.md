@@ -62,29 +62,23 @@ Usage: `changelog-reminder [options]`. Check all options by typing `$ changelog-
 ### Config file
 Changelog-reminder will load `changelog-reminder.yaml` as config file by default. Also you can use `changelog-reminder -c <file relative path>` to specify a config file. 
 
-If no config file is existed in your project, the config data will use default value.
+If no config file is existed in your project, the config data will use default arguments.
 
-```yaml
-# changelog-reminder.yaml
+```javascript
+// changelog-reminder.js
+const path = require("path");
 
-changelog: ./CHANGELOG
-logger: ./.change-reminder
-showIntro: true
-confirm: false
+module.exports = {
+  confirm: true,
+  showIntro: true,
+  changelog: "./test/CHANGELOG",
+  logger: path.join(process.cwd(), "./test/.changelogger")
+};
 ```
 
-- `changelog`: Specify the changelog file which's path is relative to the current shell location. Default: `$ ./CHANGELOG`
-
+- `changelog`: Specify the changelog file. Default: `$ ./CHANGELOG`
 - `logger`: Specify the logger file, it records which verison  you are staying at. Default: `.changelogger`
-
-
 - `showIntro` option: changelog-reminder will display the CHANGELOG introduction each time. Default: `true`
-
 - `confirm` option: after displaying the changes, changelog-reminder will enquire your whether already know the changes. It makes sure developers exactly know what's new. Default: `false` ![](./snapshots/inquiry.png?raw=true)
-
-## TODOS
-- [ ] Parsing process error handle
-- [x] Custom config for display (text, color etc...)
-
 
 
