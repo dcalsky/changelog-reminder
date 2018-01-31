@@ -2,12 +2,10 @@ import yargs = require("yargs");
 import path = require("path");
 import fs = require("fs");
 import { Reminder } from "./reminder";
-import { Config } from "./config";
-import { Argv } from "./config";
+import { Config, Argv, defaultConfigPath } from "./config";
 
 interface IArgv extends Argv, yargs.Arguments {}
 
-const defaultConfigPath = "changelog-reminder.yaml";
 const argv = yargs
   .usage("Usage: $0 [options]")
   .options({
@@ -25,4 +23,5 @@ const argv = yargs
 
 const config: Config = new Config(argv as IArgv);
 const changelogger = new Reminder(config);
+
 changelogger.run();

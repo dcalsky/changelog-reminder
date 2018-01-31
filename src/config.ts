@@ -1,17 +1,24 @@
 import path = require("path");
 import fs = require("fs");
-import * as yaml from "js-yaml";
 import { Arguments } from "yargs";
 
 const defaultChangelogPath = "CHANGELOG";
 const defaultLoggerPath = ".changelog-reminder";
-const defaultConfigPath = "changelog-reminder.yaml";
+
+export const defaultConfigPath = "changelog-reminder.js";
 
 export interface Argv {
   config: string;
 }
 
-export class Config {
+export interface ConfigOptions {
+  confirm: boolean;
+  showIntro: boolean;
+  logger: string;
+  changelog: string;
+}
+
+export class Config implements ConfigOptions {
   confirm: boolean = false;
   showIntro: boolean = true;
   logger: string = defaultLoggerPath;
@@ -23,19 +30,23 @@ export class Config {
     }
   ) {
     const cwd = process.cwd();
-    this.loadConfig(argv.config);
+    const configPath = path.resolve(cwd, argv.config);
 
-    this.changelog = path.join(cwd, this.changelog);
-    this.logger = path.join(cwd, this.logger);
+    this.loadConfig(configPath);
+    this.changelog = path.resolve(cwd, this.changelog);
+    this.logger = path.resolve(cwd, this.logger);
   }
 
-  private loadConfig(relativePath: string) {
-    const configPath = path.join(process.cwd(), relativePath);
+  private loadConfig(configPath: string) {
     if (fs.existsSync(configPath)) {
-      const configFile = yaml.safeLoad(fs.readFileSync(configPath, "utf8"));
-      Object.keys(configFile).map(key => {
-        this[key] = configFile[key];
-      });
+      const configFile: ConfigOptions = require(configPath);
+      this.mergeOptions(configFile);
     }
+  }
+
+  private mergeOptions(configFile: ConfigOptions) {
+    Object.keys(configFile).map(key => {
+      this[key] = configFile[key] === undefined ? this[key] : configFile[key];
+    });
   }
 }
