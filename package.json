@@ -1,7 +1,7 @@
 {
   "name": "changelog-reminder",
-  "version": "0.5.3",
-  "bin": "./bin/cli",
+  "version": "0.5.4",
+  "bin": "./cli.js",
   "author": "dcalsky",
   "license": "Apache-2.0",
   "keywords": [

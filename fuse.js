@@ -3,7 +3,7 @@ const { FuseBox, JSONPlugin, BannerPlugin } = require("fuse-box");
 const fuse = FuseBox.init({
   homeDir: "src",
   target: "server@es5",
-  output: "bin/$name",
+  output: "$name.js",
   tsConfig: "tsconfig.json",
   useTypescriptCompiler: true,
   plugins: [JSONPlugin(), BannerPlugin("#!/usr/bin/env node")]
