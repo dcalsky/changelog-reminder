@@ -6,9 +6,7 @@ Changelog-reminder
 [![NPM](https://nodei.co/npm/changelog-reminder.png)](https://nodei.co/npm/changelog-reminder/)
 
 
-Changelog-reminder is a CHANGELOG file parsing and logging tool. It will parse the changelog file with [keep a changelog](http://keepachangelog.com/en/1.0.0/) as the standard format.
-
-After parsing the changelog file of your project, it will show what new features have been added since the last update and records the current changelog version as the basis for the next.
+Changelog-reminder is a CHANGELOG file parsing and logging tool. It will parse the changelog file with [keep a changelog](http://keepachangelog.com/en/1.0.0/) as the standard format. After parsing the changelog file of your project, it will show which new features have been added since the last update.
 
 
 ## Install changelog-reminder
@@ -34,7 +32,7 @@ $ changelog-reminder
 It will outputs all changes after parsing:[![asciicast](https://asciinema.org/a/7bhdpHKIIa7psr8dmbjiGrovf.png)](https://asciinema.org/a/7bhdpHKIIa7psr8dmbjiGrovf)
 
 
-### Installed as a dependency in project 
+### Installed as a dependency in project
 Add this starting instruction to NPM scripts, such as this `package.json`:
 
 ```json
@@ -60,7 +58,7 @@ Usage: `changelog-reminder [options]`. Check all options by typing `$ changelog-
 
 
 ### Config file
-Changelog-reminder will load `changelog-reminder.yaml` as config file by default. Also you can use `changelog-reminder -c <file relative path>` to specify a config file. 
+Changelog-reminder will load `changelog-reminder.yaml` as config file by default. Also you can use `changelog-reminder -c <file relative path>` to specify a config file.
 
 If no config file is existed in your project, the config data will use default arguments.
 
